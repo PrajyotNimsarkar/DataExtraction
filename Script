@@ -1,0 +1,44 @@
+wget https://s3.amazonaws.com/cloud-age/flume-sources-1.0-SNAPSHOT.jar                                                                                   (In lib folder only)
+
+nano apache-flume-1.4.0-bin/conf/flume-env.sh                                                                                                                                                 (Add # before the last line)
+
+FLUME_CLASSPATH="/home/ubuntu/apache-flume-1.4.0-bin/lib/flume-sources-1.0-SNAPSHOT.jar" 
+
+hadoop fs -mkdir hdfs://localhost:9000/user/ubuntu/twitter/
+
+nano twitter.conf 
+
+# Naming the components on the current agent
+TwitterAgent.sources = Twitter 
+TwitterAgent.channels = MemChannel
+TwitterAgent.sinks = HDFS 
+# Describing/Configuring the source
+TwitterAgent.sources.Twitter.type = com.cloudera.flume.source.TwitterSource
+TwitterAgent.sources.Twitter.channels = MemChannel  
+TwitterAgent.sources.Twitter.consumerKey = bsITNAn6Gq0WrSopSWvp4VCfb 
+TwitterAgent.sources.Twitter.consumerSecret = Pd6gq5woj6rkFZ0ATt6G0b2rZvuhx52UnnoeNiQHOoHte7z8gw 
+TwitterAgent.sources.Twitter.accessToken = 2238647731-nARVjyclOs0YxcbFUNdjYFNt2ycwnKxLHgsO1Ut 
+TwitterAgent.sources.Twitter.accessTokenSecret = ayPrZalppaFEhG04dw6QojDSPgFmyPyfYnRogqtosoGri
+TwitterAgent.sources.Twitter.keywords = TSLPRB, hadoop, big data, analytics, bigdata, cloudera, data science, data scientist, business intelligence, Nandi Awards, new data,indvspak,christmas,omicron,HappyBirthdaySalmanKhan,INDvsSA,Arsenal
+# Describing/Configuring the sink 
+TwitterAgent.sinks.HDFS.channel = MemChannel 
+TwitterAgent.sinks.HDFS.type = hdfs 
+TwitterAgent.sinks.HDFS.hdfs.path = hdfs://localhost:9000/user/ubuntu/twitter/
+TwitterAgent.sinks.HDFS.hdfs.fileType = DataStream 
+TwitterAgent.sinks.HDFS.hdfs.writeFormat = Text 
+TwitterAgent.sinks.HDFS.hdfs.batchSize = 1000
+TwitterAgent.sinks.HDFS.hdfs.rollSize = 0 
+TwitterAgent.sinks.HDFS.hdfs.rollCount = 1000
+TwitterAgent.sinks.HDFS.hdfs.rollInterval = 900
+# Describing/Configuring the channel 
+TwitterAgent.channels.MemChannel.type = memory 
+TwitterAgent.channels.MemChannel.capacity = 1000 
+TwitterAgent.channels.MemChannel.transactionCapacity = 1000
+
+mv twitter.conf apache-flume-1.4.0-bin/conf/ 
+
+ mv flume-sources-1.0-SNAPSHOT.jar ~/apache-flume-1.4.0-bin/lib
+
+cd /home/ubuntu/apache-flume-1.4.0-bin/bin
+
+./flume-ng agent --conf /home/ubuntu/apache-flume-1.4.0-bin/conf/ -f  /home/ubuntu/apache-flume-1.4.0-bin/conf/twitter.conf -Dflume.root.logger=DEBUG,console -n TwitterAgent
