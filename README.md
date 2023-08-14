@@ -1,2 +1,2 @@
 # TwitterDataExtraction
-Data from twitter is being extracted and then stored on HDFS/S3
+By doing step step execution of the instructions given in the script we can perform the streaming data extraction from twitter and then store it on HDFS/S3 
